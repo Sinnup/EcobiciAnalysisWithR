@@ -1,3 +1,5 @@
 # EcobiciAnalysisWithR
 
-Add in the same level path a directory called Data and inside of it add the excel files downloaded from Ecobici page.
+Add in the same level path a directory called Data and inside of it add the excel files downloaded from Ecobici page https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data.
+
+Download from January till May excel files.
