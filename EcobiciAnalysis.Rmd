@@ -42,6 +42,16 @@ La BD `ECOBICI` contiene 7 tablas, una por cada mes, es decir, una por cada arch
 
 El siguiente código sirve para acceder a una base de datos de MySQL, sin embargo lo que yo utilicé fue directamente de archivos Excel y construcción de Data Frames ¿Por qué? Porque utilizo la computadora del trabajo que tiene algunas restricciones para copiar archivos directamente de Excel en base de datos.
 
+```{r message=FALSE, warning=FALSE}
+install.packages("readr")
+install.packages("ggplot2")
+install.packages("stringr")
+install.packages("dplyr")
+install.packages("knitr")
+
+```
+
+
 ```{r message=FALSE, warning=FALSE} 
 library(readr)
 library(ggplot2)
@@ -421,18 +431,23 @@ Interacción con API
 Las anteriores estaciones son las siguientes: 
 
 + 27 REFORMA-HAVRE 
+```{r}
+library(googleway)
+df <- google_geocode(address = "Dr. Atl 120, Santa Maria la Ribera", key = key, simplify = TRUE)
+geocode_coordinates(df)
+df$results$geometry$location$lat
+```
 
 ```{r message=FALSE, warning=FALSE}
-# first_station <- geocode('Paseo de la Reforma y Havre, Juárez, 06600 Ciudad de México, Ciudad de México, México', 
-#                   source = "google")
-# map_first_station <- get_map(location = as.numeric(first_station),
-#                       color = "color",
-#                       maptype = "roadmap",
-#                       scale = 2,
-#                       zoom = 16)
-# ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
-#                                data = first_station , colour = 'green',
-#                                shape = 20, size = 10, fill= "green")
+first_station <- google_geocode('Paseo de la Reforma y Havre, Ju�rez, 06600 Ciudad de M�xico, Ciudad de M�xico, M�xico')
+map_first_station <- get_map(location = as.numeric(first_station),
+                      color = "color",
+                      maptype = "roadmap",
+                      scale = 2,
+                      zoom = 16)
+ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
+                               data = first_station , colour = 'green',
+
 ```
 
 + 271 AV. CENTRAL-J. MENESES
