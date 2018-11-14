@@ -1,5 +1,5 @@
-# EcobiciAnalysisWithR
+# Analisis de Datos de Ecobici con R
 
-Add in the same level path a directory called Data and inside of it add the excel files downloaded from Ecobici page https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data.
+Agregar en el mismo nivel una directorio llamado "Data" y dentro de éste agregar los archivos de excel descargados de los hisctóricos abiertos de Ecobici: https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data.
 
-Download from January till May excel files.
+Descarga los archivos excel desde el mes de enero hasta julio.
