@@ -6,5 +6,5 @@ Download the excel files from January to July.
 
 Find the presentation in an HTML document at the following link: https://ecobici-data-analysis-with-r.firebaseapp.com/
 
-### Where does html file go?
-It goes in "public" directory.
+### Where does html file must be included?
+It must be included in "public" directory.
