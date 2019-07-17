@@ -1,64 +1,75 @@
 ---
 title: "Final Project Data Analyst R: Ecobici Analysis"
-author: "Carlos Fernando Vásquez Guerra y Sinué Salvador Flores Calderón"
+author: "Carlos Fernando Vásquez Guerra and Sinué Salvador Flores Calderón"
 output:
   html_document:
     df_print: paged
     highlight: pygments #espresso
     theme: cosmo
+    includes:
+      in_header: "favicon.html"
+    
 ---
 # {.tabset .tabset-fade .tabset-pills}
 
 ## Data Profiling
 
-###Contexto
-El siguiente proyecto tiene como finalidad hacer un análisis exploratorio sobre los datos históricos de los meses de enero hasta julio del año 2018 proporcionados por la página de [ecobici](https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data); en la misma liga se puede econtrar lo necesario para accesar al API proporcionado por este servicio. La documentación sobre la API se encuentra en la siguiente [liga](https://www.ecobici.cdmx.gob.mx/sites/default/files/pdf/manual_api_opendata_esp_final.pdf)
+### **Context**
 
-`Ecobici` es un servicio de bicicletas públicas de la Ciudad de México dirigido a los habitantes de la capital, de sus alrededores y a los turistas.
+The following project aims to make an exploratory analysis on the historical data of the months of January to July of the year 2018 provided by the page of [ecobici](https://www.ecobici.cdmx.gob.mx/es/informacion -of-service / open-data); in the same link you can find what you need to access the API provided by this service. The documentation on the API can be found in the following [link](https://www.ecobici.cdmx.gob.mx/sites/default/files/pdf/manual_api_opendata_esp_final.pdf).
 
-El funcionamiento de este servicio permite a los usuarios registrados tomar una bicicleta de cualquier cicloestación y devolverla en la más cercana a su destino en trayectos ilimitados de 45 minutos.
+`Ecobici` is a public bicycle service in Mexico City aimed at the inhabitants of the capital, its surroundings and tourists.
 
-La forma para acceder a este servicio es mediante un suscripción anual, semanal, de cada tres días o diaria
+The operation of this service allows registered users to take a bicycle from any station and return it in the closest to its destination in unlimited journeys of 45 minutes.
 
-Este servicio está disponible en un horario de 5:00 hrs hasta 00:30 hrs todos los días del año, el cuál inicio en el año 2010, febrero con 84 `cicloestaciones` y mil 200 bicicletas.
+The way to access this service is through an annual, weekly, three-day or daily subscription.
 
-Actualmente `Ecobici` cuenta con más de 170 mil usuarios registrados y el servicio está disponible en 55 colonias de la Ciudad de México, en un área de 38 kilómetros cuadrados.
+This service is available from 5:00 a.m. to 12:00 a.m. every day of the year, which starts in 2010, February with 84 "cicloestaciones" ("ciclostations") and 1,200 bicycles.
 
-El API de `ecobici`se enfoca en datos actuales y el objetivo es sobre los datos históricos, para su obtención no es necesario utilizar la API.
+Currently `Ecobici` has more than 170 thousand registered users and the service is available in 55 colonies in Mexico City, in an area of 38 square kilometers.
 
-Los datos fueron descargados y almacenados en una BD llamada `ECOBICI`; el dump para exportar esta BD se encuentra en los archivos suministrados en este proyecto en la carpeta `data`
+The historical data was downloaded and stored in a database called `ECOBICI`; the scripts to export this DB can be found in the files provided in this project in the `data` folder.
 
-La BD `ECOBICI` contiene 7 tablas, una por cada mes, es decir, una por cada archivo descargado directamente de la página de ecobici; cada tabla contiene los siguientes campos: 
+The DB `ECOBICI` contains 7 tables, one for each month, that is, one for each file downloaded directly from the ecobici page; each table contains the following fields:
 
-+ **genero_usuario**: Genero del usuario que utilizó el servicio ecobici.
-+ **edad_usuario**: Edad del usuario que utilizó el servicio ecobici.
-+ **id_bici**: Identificador de la bicicleta utilizada.
-+ **ciclo_estacion_retiro**: Identificador de la estación donde se retiró la bicicleta.
-+ **re_date**: Fecha de retiro de la bicicleta de la última estación registada para su utilzación.
-+ **re_time**: Hora de retiro de la bicicleta de la última estación registrada para su utilización.
-+ **ciclo_estacion_arribo**: Identificador de la estación donde se deposita la bicicleta.
-+ **ciclo_estacion_arribo**: Fecha de llegada de la bicicleta a la estación de arrivo.
-+ **arr_time**: Hora de llegada de la bicicleta a la estación de arrivo.
++ **genero_usuario**: Genre of the user who used the ecobici service.
++ **age_user**: Age of the user who used the ecobici service.
++ **id_bici**: Identifier of the bicycle used.
++ **ciclo_estacion_retiro**: Identifier of the station where the bicycle was removed.
++ **re_date**: Date of withdrawal of the bicycle from the last station registered for its use.
++ **re_time**: Bicycle withdrawal time of the last station registered for its use.
++ **cycle_stacion_arribo**: Identifier of the station where the bicycle is returned.
++ **cycle_stacion_arribo**: Date of arrival of the bicycle to the arrival station.
++ **arr_time**: Arrival time of the bicycle to the arrival station.
 
-El siguiente código sirve para acceder a una base de datos de MySQL, sin embargo lo que yo utilicé fue directamente de archivos Excel y construcción de Data Frames ¿Por qué? Porque utilizo la computadora del trabajo que tiene algunas restricciones para copiar archivos directamente de Excel en base de datos.
+The following code is used to access a MySQL database, however what we used was directly from Excel files and Data Frames construction. Why? Only for practicity for the purpose of this document.
 
+#### Installing necessary packages
 ```{r message=FALSE, warning=FALSE}
-install.packages("readr")
-install.packages("ggplot2")
-install.packages("stringr")
-install.packages("dplyr")
-install.packages("knitr")
-
+# install.packages("readr")
+# install.packages("ggplot2")
+# install.packages("stringr")
+# install.packages("dplyr")
+# install.packages("knitr")
+# install.packages("tidyr")
+# install.packages("lubridate")
+# install.packages("ggmap")
+# install.packages("plotly")
+# install.packages("tidyverse")
+# install.packages("RMySQL")
+# install.packages("pool")
+# install.packages("DBI")
+# install.packages("googleway")
 ```
 
-
+#### Importing libraries
 ```{r message=FALSE, warning=FALSE} 
 library(readr)
 library(ggplot2)
 library(stringr)
 library(dplyr)
-library(knitr) #para generar una tabla cool en el reporte
-library(tidyr) #para manipulacion de datos
+library(knitr) #To generate a cool table
+library(tidyr) #For data manipulation
 library(lubridate)
 library(ggmap)
 library(plotly)
@@ -66,16 +77,16 @@ library(tidyverse)
 library(RMySQL)
 library(pool)
 library(DBI)
+library(googleway)
+library(httr)
 ```
 
-Si me hubiera conectado a una base de datos:
-
-Se procederá a la conexión y extracción de datos desde la BD
+If we would have connected to the DB, then we would execute this code:
 ```{r message=FALSE, warning=FALSE}
 "[db.host <- 'localhost'
 db.user <- 'root'
 db.port <- 3306
-db.password <- 'Calderon260'
+db.password <- '$<your password>'
 
 ## DB Connection
 db_connect <- function(db.name) {
@@ -92,8 +103,7 @@ db_connect <- function(db.name) {
 }]"
 ```
 
-Nos interesa hacer un análisis sobre todos los datos por lo que, para evitar seleccionar todo por partes de cada tabla, se extraeran todos los datos de cada tabla.
-
+Then we would took converted each month of data into Data Frames.
 ```{r}
 "[
 January <- tbl(db_connect('ECOBICI'), 'Enero') %>% collect()
@@ -106,7 +116,7 @@ July <- tbl(db_connect('ECOBICI'), 'Julio') %>% collect()
 ]"
 ```
 
-Como yo leí la información directamente de los archivos de excel :
+But instead we read the information directly from ".cvs" files, this way:
 ```{r message=FALSE, warning=FALSE}
 January <- read_csv("data/2018-01.csv",col_names = T, na = c(""," ", "NA", "?"))
 February <- read_csv("data/2018-02.csv",col_names = T, na = c(""," ", "NA", "?"))
@@ -125,13 +135,13 @@ names(June) <- tolower(names(June))
 names(July) <- tolower(names(July))
 ```
 
-Ahora, un poco de limpieza
+It's important to see what type of values contain our data, to clean or addecuate values for what we need.
 
 ```{r}
 January
 ```
 
-Con la siguiente función se modificará el tipo de dato en `genero_usuario` y se colapsará los datos de tiempo y fecha en un sólo dato para los tiempos de arrivo y los tiempos de retiro registrados
+With the following function the data type will be modified in `user_genre` and the time and date data will be collapsed in a single data for the arrival times and the withdrawal times recorded.
 
 ```{r}
 gender_arr_fix <- function(data){
@@ -160,7 +170,7 @@ gender_arr_fix <- function(data){
 }
 ```
 
-Modificamos la tabla con la función previamente creada
+Then through the previous function original Data Frames were modified.
 ```{r}
 January <- gender_arr_fix(January)
 February <- gender_arr_fix(February)
@@ -171,56 +181,58 @@ June <- gender_arr_fix(June)
 July <- gender_arr_fix(July)
 ```
 
+... and got this new information:
 ```{r}
 July
 ```
 
-Para realizar un perfilamiento de datos se hace uso del módulo `DataProfiling el cual se encuentra en los documentos de este proyecto.
+### **Data Profiling**
+
+To make a profiling of data, we used the `DataProfiling` module which is found in the documents of this project.
 
 ```{r}
 source("DataProfiling.R")
 ```
 
-Ahora, se hará el data profiling por cada mes
+It should be noted that `edad_usuario`,` id_bici`, `ciclo_estacion_retiro`,` ciclo_estacion_arribo` are identifiers, so, even if they are numerical type, they do not provide any relevant quantitative information, therefore we only observed characteristics over data which do not include numerical summaries.
 
-Hay que observar que `edad_usuario`, `id_bici`, `ciclo_estacion_retiro`, `ciclo_estacion_arribo` son identificadores, por lo que, aunque sean de tipo numérico, no proporcionan alguna información cuantitativa relevante, por lo que solo se observarán características sobre los datos que no incluya resumenes numericos.
+First a data count and then a summary of each month was made.
 
-Primero un conteo de datos y después un resumen por cada mes.
-
+#### **Data count of each month**
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 conteos <- tibble(Month = c("January", "February", "March", "April", "May", "June", "July"), 
        Count = c(nrow(January), nrow(February), nrow(March), nrow(April), nrow(May), nrow(June), nrow(July)))
 conteos
 ```
 
-## Enero
+## January
 ```{r}
 Jan_fac <- January %>% select(-c(re_datetime, arr_datetime))
 Jan_date <- January %>% select(c(re_datetime, arr_datetime))
 ```
 
-Se construye una tabla con especificaciones de formato, que los números muy grandes los separe con "," y que no utilice notación científica
+A table with format specifications is built, that large numbers separate them with "," and do not use scientific notation.
 ```{r}
 Jan_factor <- Jan_fac %>% profiling("categorical")
 kable(Jan_factor, format.args = list(big.mark=",", scientific=F))
 ```
 
-Para los datos de tiempo sólo se verifica si existen valores nulos y el conteo de los valores únicos.
-
+For the time data it was only verified if there are null values and the count of the unique values.
 ```{r}
 Jan_datetime <- Jan_date %>% profiling("other")
 kable(Jan_datetime, format.args = list(big.mark=",", scientific=F))
 ```
-Y no hay valores nulos
 
-### Hallazgos de Enero
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 7376 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 271
-+ La estación más concurrida para dejar una bicicleta fue la 1
+There weren't null values.
 
-## Febrero
+### **January Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 7376 was the most used.
++ The busiest station to take a bicycle was the 271.
++ The busiest station to return a bicycle was the 1.
+
+## February
 ```{r}
 Feb_fac <- February %>% select(-c(re_datetime, arr_datetime))
 Feb_date <- February %>% select(c(re_datetime, arr_datetime))
@@ -235,15 +247,14 @@ kable(Feb_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Febrero
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 2019 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 271
-+ La estación más concurrida para dejar una bicicleta fue la 43
+### **February Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 2019 was the most used.
++ The busiest station to take a bicycle was the 271.
++ The busiest station to return a bicycle was the 43.
 
-
-## Marzo
+## March
 ```{r}
 Mar_fac <- March %>% select(-c(re_datetime, arr_datetime))
 Mar_date <- March %>% select(c(re_datetime, arr_datetime))
@@ -258,12 +269,12 @@ kable(Mar_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Marzo
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 2698 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 271
-+ La estación más concurrida para dejar una bicicleta fue la 27
+### **March Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 2698 was the most used.
++ The busiest station to take a bicycle was the 271.
++ The busiest station to return a bicycle was the 27.
 
 ## Abril
 ```{r}
@@ -281,14 +292,14 @@ kable(A_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Abril
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 11065 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 27
-+ La estación más concurrida para dejar una bicicleta fue la 27
+### **April Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 11065 was the most used.
++ The busiest station to take a bicycle was the 27.
++ The busiest station to return a bicycle was the 27.
 
-## Mayo
+## May
 ```{r}
 May_fac <- May %>% select(-c(re_datetime, arr_datetime))
 May_date <- May %>% select(c(re_datetime, arr_datetime))
@@ -303,14 +314,15 @@ kable(May_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Mayo
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 15259 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 271
-+ La estación más concurrida para dejar una bicicleta fue la 27
+### **May Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 15259 was the most used.
++ The busiest station to take a bicycle was the 271.
++ The busiest station to return a bicycle was the 27.
 
-+ Junio
+
+## June
 ```{r}
 Jun_fac <- June %>% select(-c(re_datetime, arr_datetime))
 Jun_date <- June %>% select(c(re_datetime, arr_datetime))
@@ -326,14 +338,15 @@ kable(Jun_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Junio
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 2789 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 271
-+ La estación más concurrida para dejar una bicicleta fue la 27
+### **June Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 2789 was the most used.
++ The busiest station to take a bicycle was the 271.
++ The busiest station to return a bicycle was the 27.
 
-+ Julio
+
+## July
 ```{r}
 July_fac <- July %>% select(-c(re_datetime, arr_datetime))
 July_date <- July %>% select(c(re_datetime, arr_datetime))
@@ -349,110 +362,134 @@ kable(July_datetime, format.args = list(big.mark=",", scientific=F))
 
 ```
 
-### Hallazgos de Enero
-+ La mayoría de los usuarios son de género masculino.
-+ La mayoría de los usuarios tienen 28 años
-+ La bicicleta con id 9581 fue la más usada
-+ La estación más concurrida para tomar una bicicleta fue la 27
-+ La estación más concurrida para dejar una bicicleta fue la 27
+### **July Findings**
++ More than 50% of users are male.
++ The mode of users age is 28 years old.
++ The bicycle with id 9581 was the most used.
++ The busiest station to take a bicycle was the 27.
++ The busiest station to return a bicycle was the 27.
 
-Vease que la estación número 271 es la que tiene un mayor número de registros donde los usuarios tomaron una biclceta en los meses de : 
+## EDA
 
-+ Enero, Febrero, Marzo, Mayo y Junio.
+Thanks to the data shown before, it was possible to make an Exploratory Data Analysis.
 
-Por otro lado, la estación 27 en los meses de Abril y Julio es donde se obtienen la mayor cantidad de registros donde los usuarios tomaron una bicicleta. Esta estación es tienen la mayoría donde los usuarios depositaron una bicicleta en los meses de : 
+See that station number 271 is the one with the highest number of records where users took a bicycle in the months of:
 
-+ Marzo, Abril, Mayo, Junio y Julio.
++ January, February, March, May and June.
 
-Ahora, surgen varias preguntas o issues sobre los datos.
+On the other hand, station 27 is the most frequented to take a bicycle in the months of April and July. Also this station is the majority where users returned a bicycle in the months of:
 
-##EDA
++ March, April, May, June and July.
 
-A continuación se presenta un análisis exploratorio.
+Now, several questions or issues arised about the data.
 
-###Ubicaciones más recurrentes
-¿Dónde se ubican las estaciones más 27 y 271, así como la 1 y 43?
+### **Most recurrent locations**
 
-Un mapa de todas las `cicloestaciones` se encuentra en la página oficial de ecobici, aunque en esta [liga](https://www.ecobici.cdmx.gob.mx/sites/default/files/pdf/mapa_web_opt_0.pdf) se encuentra el archivo correspondiente.
+Where are stations 27 and 271 located, as well as stations 1 and 43?
 
-La ubicación de cada una de las 480 estaciones se encuentra en la siguiente [página](https://www.ecobici.cdmx.gob.mx/es/mapa-de-cicloestaciones#anclamapa)
+A map of all the `stations` can be found on the official ecobici website, although in this [link](https://www.ecobici.cdmx.gob.mx/sites/default/files/pdf/mapa_web_opt_0.pdf) the corresponding file is found.
 
-O bien se puede conseguir desde la API, donde se necesita un access token, obtenido de las credenciales propias de cada usuario, este access token tiene tiempo de vida de una hora.
-(poner en navegador https://pubsbapi.smartbike.com/oauth/v2/token?client_id=585_5oct79smo5s8kk0ksggkg0sokkkwwk00o0ssw4ww840gg04owc&clien
-t_secret=il6ccw6rdtkwo00cwoc44w4c8wgc4084g4gosowws004k888g&grant_type=client_credentials)
+The location of each of the 480 stations can be found in the following [page](https://www.ecobici.cdmx.gob.mx/es/mapa-de-cicloestaciones#anclamapa).
 
-Interacción con API
+Or it can be obtained from the API, where an access token is needed, obtained from the credentials of each user, this access token has an expiration time of one hour.
+(put in browser https://pubsbapi.smartbike.com/oauth/v2/token?client_id=`{CLIENT_ID}`&client_secret=`{CLIENT_SECRET}`&grant_type=client_credentials).
+
+### **Interaction with API of Ecobici**
+
+Before we use thed the API, it was needed to get the our own credentials in this [page](https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data). After this, then we got a JSON file with the stations of Ecobici service:
 
 ```{r warning=FALSE}
-#install.packages(httr)
-# library(httr)
-# ecobici_api <- function(path) {
-#   url <- modify_url("https://pubsbapi.smartbike.com", path = path)
-#   
-#   resp <- GET(url)
-#   if (http_type(resp) != "application/json") {
-#     stop("API did not return json", call. = FALSE)
-#   }
-#   
-#   parsed <- jsonlite::fromJSON(content(resp, "text"), simplifyVector = FALSE)
-#   
-#   if (http_error(resp)) {
-#     stop(
-#       sprintf(
-#         "Ecobici API request failed [%s]\n%s\n<%s>", 
-#         status_code(resp),
-#         parsed$message,
-#         parsed$documentation_url
-#       ),
-#       call. = FALSE
-#     )
-#   }
-#   
-#   structure(
-#     list(
-#       content = parsed,
-#       path = path,
-#       response = resp
-#     ),
-#     class = "ecobici_api"
-#   )
-# }
-# 
-# print.ecobici_api <- function(x, ...) {
-#   cat("<Ecobici ", x$path, ">\n", sep = "")
-#   str(x$content)
-#   invisible(x)
-# }
-# 
-# ecobici_api("/api/v1/stations.json?access_token=OTcyMmJkYjUxYWM4MzQzMjQ0YTU3Njk3MjNkYzkyNWJmYzIwNjVkZTcyYTJlMjM3Yzg3NmQ1YTUwZGY2MGFmYg")
+ecobici_api <- function(path) {
+  url <- modify_url("https://pubsbapi.smartbike.com", path = path)
+  
+  resp <- GET(
+    url, 
+    add_headers(charset="UTF-8")
+    )
+  if (http_type(resp) != "application/json") {
+    stop("API did not return json", call. = FALSE)
+  }
+
+  parsed <- jsonlite::fromJSON(content(resp, "text", encoding = "UTF-8"), simplifyVector = FALSE)
+
+  if (http_error(resp)) {
+    stop(
+      sprintf(
+        "Ecobici API request failed [%s]\n%s\n<%s>",
+        status_code(resp),
+        parsed$message,
+        parsed$documentation_url
+      ),
+      call. = FALSE
+    )
+  }
+
+  structure(
+    list(
+      content = parsed,
+      path = path,
+      response = resp
+    ),
+    class = "ecobici_api"
+  )
+}
+
+print.ecobici_api <- function(x, ...) {
+  cat("<Ecobici ", x$path, ">\n", sep = "")
+  ##Uncomment to see the whole JSON structure
+  ##str(x$content)
+  invisible(x)
+}
+
+ecobici_api("/api/v1/stations.json?access_token=${your_access_token}")
 ```
 
 
-Las anteriores estaciones son las siguientes: 
+### **Location of each station **
 
-+ 27 REFORMA-HAVRE 
+Before each operation, it's important to get an `API_KEY` from google console, therefore we had to create a project and then enable the Google Maps API.
 ```{r}
-library(googleway)
-df <- google_geocode(address = "Dr. Atl 120, Santa Maria la Ribera", key = key, simplify = TRUE)
-geocode_coordinates(df)
-df$results$geometry$location$lat
+key <- "${your_api_key}"
+```
+
+### **27 REFORMA-HAVRE **
+```{r}
+first_station <- google_geocode(address = "Paseo de la Reforma y Havre, Juárez, 06600 Ciudad de México", key = key, simplify = TRUE)
+
+coord <- first_station$results$geometry$location
+name <- first_station$results$address_components[[1]]$long_name
+
+google_map(key = key, data = coord, zoom = 1) %>% 
+  add_markers(lat = "lat", lon = "lng", info_window = name)
 ```
 
 ```{r message=FALSE, warning=FALSE}
-first_station <- google_geocode('Paseo de la Reforma y Havre, Ju�rez, 06600 Ciudad de M�xico, Ciudad de M�xico, M�xico')
-map_first_station <- get_map(location = as.numeric(first_station),
-                      color = "color",
-                      maptype = "roadmap",
-                      scale = 2,
-                      zoom = 16)
-ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
-                               data = first_station , colour = 'green',
-
+# Deprecated code of previous version
+# first_station <- geocode('Paseo de la Reforma y Havre, Juárez, 06600 Ciudad de México', 
+#                   source = "google")
+# map_first_station <- get_map(location = as.numeric(first_station),
+#                       color = "color",
+#                       maptype = "roadmap",
+#                       scale = 2,
+#                       zoom = 16)
+# ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
+#                                data = first_station , colour = 'green',
 ```
 
-+ 271 AV. CENTRAL-J. MENESES
+### ***271 AV. CENTRAL-J. MENESES***
+
+```{r}
+second_station <- google_geocode(address = "Jesús García 271, Buenavista, 06350 Ciudad de México, CDMX, México", key = key, simplify = TRUE)
+
+coord <- second_station$results$geometry$location
+name <- second_station$results$address_components[[1]]$long_name
+
+google_map(key = key, data = coord, zoom = 2) %>% 
+  add_markers(lat = "lat", lon = "lng", info_window = name)
+```
 
 ```{r message=FALSE}
+# Deprecated code of previous version
 # second_station <- geocode('Jesús García 271, Buenavista, 06350 Ciudad de México, CDMX, México', 
 #                   source = "google")
 # 
@@ -467,9 +504,20 @@ ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
 #                                shape = 20, size = 10, fill= "green")
 ```
 
-+ 1 RIO SENA-RIO BALSAS
+### **1 RIO SENA-RIO BALSAS**
+
+```{r}
+third_station <- google_geocode(address = 'Rio Sena y Rio balsas, Ciudad de México, CDMX, México', key = key, simplify = TRUE)
+
+coord <- third_station$results$geometry$location
+name <- third_station$results$address_components[[1]]$long_name
+
+google_map(key = key, data = coord, zoom = 2) %>% 
+  add_markers(lat = "lat", lon = "lng", info_window = name)
+```
 
 ```{r message=FALSE}
+# Deprecated code of previous version
 # third_station <- geocode('Rio Sena y Rio balsas, Ciudad de México, CDMX, México', 
 #                   source = "google")
 # 
@@ -484,9 +532,20 @@ ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
 #                                shape = 20, size = 10, fill= "green")
 ```
 
-+ 1 RIO SENA-RIO BALSAS
+### **43 JUAREZ y REVILLAGIGEDO**
+
+```{r}
+fourth_station <- google_geocode(address = 'Juarez y Revillagigedo, Ciudad de México, CDMX, México', key = key, simplify = TRUE)
+
+coord <- fourth_station$results$geometry$location
+name <- fourth_station$results$address_components[[1]]$long_name
+
+google_map(key = key, data = coord, zoom = 2) %>% 
+  add_markers(lat = "lat", lon = "lng", info_window = name)
+```
 
 ```{r message=FALSE}
+# Deprecated code of previous version
 # fourth_station <- geocode('Juarez y Revillagigedo, Ciudad de México, CDMX, México', 
 #                   source = "google")
 # 
@@ -501,21 +560,23 @@ ggmap(map_first_station) + geom_point(aes(x = lon, y = lat),
 #                                shape = 20, size = 10, fill= "green")
 ```
 
-##En resumen
+## Summary
 
-- La estación con más concurrencia fue la que estaba ubicada sobre reforma, cerca de Reforma 222, que es una plaza comercial y centro de trabajo.
+- The station with more concurrence was the one that was located on "Reforma", nearby "Reforma 222", which is a mall and has work offices.
 
-- Dos estaciones se ubican cerca del metro Buenavista, donde es un punto de conexión entre mucha gente que viene del Estado de México y otras partes de la Ciudad de México para viajar a las zonas donde se encuentra la mayor densidad de empleos.
+- Two stations are located near of Buenavista subway station, where it is a point of connection between many people who come from the "Estado de Mexico" and other parts of Mexico City to move to the areas where the highest density of jobs is located.
 
-- Por último la estación 43, que en el momento de escribir esto, se encuentra fuera de operación, sin embargo es de mucha concurrencia al tener cercanía con Reforma y el centro.
+- Finally the station 43 (which at the time of writing this is out of operation) is very concurrent to have closeness to "Reforma" avenue and the downtown.
 
-Para tener todos los datos recabados en los meses de enero hasta julio del 2018, se junta todo para así obtener el tiempo promedio que los usuarios utilizan el servicio de ecobici de todas las estaciones con usabilidad registrada.
+### **Data integration of each month**
+
+To have all the data collected in the months of January to July 2018, every data set was combined to obtain the average time that users use the ecobici service of all stations with registered usability.
 
 ```{r}
 historicos_ecobici <- rbind(January, February, March, April, May, June, July)
 ```
 
-Ahora se agrega el tiempo que un usuario utilizo alguna bicicleta: 
+The time of usability of each user was calculated:
 
 ```{r}
 historicos_ecobici <- historicos_ecobici %>% 
@@ -523,24 +584,24 @@ historicos_ecobici <- historicos_ecobici %>%
 historicos_ecobici
 ```
 
-Si se ordenan estos datos por el tiempo de uso por usuario: 
+And then this data arranged by "duracion":
 
 ```{r}
 historicos_ecobici <- historicos_ecobici %>% arrange(duracion)
 ```
 
-Hay registros donde los usuarios tardaron 0 y hasta 1 segundo en dejar una bicicleta en estaciones distintas, esto es posiblemente debido a dos cosas principalmente:
+There are records where users took 0 and up to 1 second to return a bike at different stations, this is possibly due to two things mainly:
 
-1.- Si tu ecobici no la encuentras en buen funcionamiento, tienes hasta 2 minutos para regresarla.
-2.- Hay veces en que tomas la ecobici y se te cae por descuido, así que debes solicitar una de nuevo.
+1. If your ecobici isn't in good condition, you have up to 2 minutes to return it.
+2. There are times when you take the ecobici and you drop by mistake, so you must request one again.
 
 ```{r}
 historicos_ecobici %>% arrange(desc(duracion)) %>% filter(ciclo_estacion_retiro != ciclo_estacion_arribo)
 ```
 
-Hay registros donde los usuarios tardaron hasta 1.53 años en devolver una bicicleta, también semanas y hasta días.
+There are records where users took days, weeks and even up to 1.53 years to return a bicycle.
 
-Para evitar tomar datos donde los usuarios tuvieron algun error, o devolvieron la ecobici, o tardaron más de lo reglamentado, se tomaron aquellos datos con una duración a 30 segundos de una estación a otra y aquellos que cumplan con el reglamento establecido de ecobici en cuanto a la duración de 45 minutos.
+To avoid taking data where users had a mistake of did not return the bicycle, or they took longer than the regulation, a filter was used to take only data where there was a duration of 30 seconds from one station to another or those that comply with the established ecobici regulations duration of 45 minutes as maximum.
 
 ```{r}
 new_historicos_ecobici <- historicos_ecobici %>% filter(duracion <= dminutes(45))
@@ -554,45 +615,47 @@ new_historicos_ecobici
 promedio_tiempo_uso <- mean(new_historicos_ecobici$duracion)
 promedio_tiempo_uso <- minute(seconds_to_period(round(promedio_tiempo_uso)))
 
-print(str_c("El promedio de tiempo de uso de una ecobici dentro del tiempo reglamentario, en la Ciudad de México es de: ", promedio_tiempo_uso, " minutos"))
+print(str_c("The average time of use of an ecobici within the regulatory time, in Mexico City is of: ", promedio_tiempo_uso, " minutes"))
 ```
 
-Con esta nueva limpieza, obtenemos aquellos registros entre las dos estaciones de estudio (271, 27, 1 y 43)
+With this new cleaning, new records were obtained between the main 4 stations (271, 27, 1 and 43).
 
 ```{r}
 new_historicos_ecobici %>% 
-  filter(ciclo_estacion_retiro %in% c(1, 43, 27, 271) | ciclo_estacion_retiro %in% c(1, 43, 27, 271)) 
+  filter(ciclo_estacion_retiro %in% c(1, 43, 27, 271) | ciclo_estacion_arribo %in% c(1, 43, 27, 271)) 
 ```
 
-##Gráficos sobre edad y uso del servicio Ecobici
+## Graphs about age and ubsaility of the Ecobici service.
 
-Continuando con algunos otros datos, la siguiente gráfica muestra la proporción sobre el uso del servicio `ecobici` por edades registradas.
+Continuing with some other data, the following graph shows the proportion on the use of the service `ecobici` by registered ages.
 
-Por convención, se omitirán aquellos datos en el cual la edad es mayor a 85 años
+By convention, those data in which the age is greater than 85 years was be omitted.
 
 ```{r}
 new_historicos_ecobici %>% 
   filter(edad_usuario < 85) %>% 
   group_by(edad_usuario) %>% 
-  dplyr::summarise(count = n()) %>% 
-  mutate(proportion = count/sum(count)) %>% 
+  dplyr::summarise(conteo = n()) %>% 
+  mutate(proportion = conteo/sum(conteo)) %>% 
   ggplot(aes(x = edad_usuario, y = proportion, fill = proportion)) +
   geom_bar(stat = "identity") +
-  ggtitle("Proporción de uso del servicio sobre la edad de los usuarios ")
+  labs(x = "User age", y = "Proportion") +
+  ggtitle("Proportion of use of the service over the age of the users")
 ```
 
-###¿Cuáles son las horas más y menos comunes de servicio?  
+### **What are the most and least common hours of service?**
 
-Esto servirá para saber cuando se requiere mayor demanda de servicio y mayor disponibilidad de bicicletas. Se utiliza el parámetro `re_datetime` porque es la hora en la cual los usuarios comienzan a usar una bicicleta, que no debería variar mucho a lo largo del día coparado con `arr_datetime`, porque el tiempo de uso con las nuevas tablas es de menos de 45 minutos.
+This will serve to know when a higher demand for service and greater availability of bicycles is required. The parameter `re_datetime` is used because it is the time at which users start using a bicycle, which should not vary much during the day with` arr_datetime`, because the time of use with the new tables is less than 45 minutes.
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 por_hora_del_dia <- new_historicos_ecobici %>% 
     mutate(hora = hour(re_datetime)) %>% 
     group_by(hora)  %>% 
     dplyr::summarise(conteo = n()) %>% 
-  ggplot(aes(x = hora, y = conteo, fill = conteo)) +
-  geom_bar(stat = "identity")+
-  ggtitle("Cantidad de usuarios activos por hora que toman una ecobici")
+    ggplot(aes(x = hora, y = conteo, fill = conteo)) +
+    geom_bar(stat = "identity") +
+    ggtitle("Number of active users per hour who take a bicycle") +
+    labs(x = "Hour of day", y = "Number of users")
 ggplotly(por_hora_del_dia)
 ```
 
@@ -603,11 +666,12 @@ por_hora_del_dia <- new_historicos_ecobici %>%
     dplyr::summarise(conteo = n()) %>% 
   ggplot(aes(x = hora, y = conteo, fill = conteo)) +
   geom_bar(stat = "identity")+
-  ggtitle("Cantidad de usuarios activos por hora que dejan una ecobici")
+  ggtitle("Number of active users per hour returning a bicycle") +
+  labs(x = "Hour of day", y = "Number of users")
 ggplotly(por_hora_del_dia)
 ```
 
-Para tener los datos de cuales son las 10 horas donde hay mayor demanda de cobici se cuentan los usuarios por hora: 
+To have the top 10 hours where there is greater demand for `ecobici`, users were counted by hour:
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 new_historicos_ecobici %>% 
@@ -618,13 +682,11 @@ new_historicos_ecobici %>%
   head(10)
 ```
 
-####¡Bingo!
+### **Bingo!**
 
-Es curioso que estas horas coincidan con la hora habitual para entrar y salir de trabajar en la Ciudad de México, lo que tiene sentido, porque mucha gente va al trabajo en estos vehículos.
+It is curious that these hours coincide with the usual time to enter and leave to work in Mexico City, which makes sense, because many people go to work on these vehicles.
 
-Para finalizar, algunas preguntas sobre el genero de los usuarios.
-
-Falta un análisis de realizar y es para saber qué días de la semana tienen mayor demanda de bicicletas, por la cantidad de usuarios que toman alguna
+There's one more analysis and it's to know which days of the week have the highest demand for bicycles, due to the number of users who take any.
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 por_dia_semana <- new_historicos_ecobici %>% 
@@ -637,32 +699,33 @@ por_dia_semana
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 dias_sem <- ggplot(por_dia_semana, aes(x=dia_semana, y=conteo, fill= dia_semana)) +
-  geom_bar(stat = "identity")+
-  ggtitle("Cantidad de usuarios por día de la semana")
+  geom_bar(stat = "identity") +
+  ggtitle("Number of users per day of the week") + 
+  labs(x = "Day of week", y = "Number of users")
 ggplotly(dias_sem)
 ```
 
-Es muy claro que la actividad disminuye en fines de semana a menos de la mitad habitual y el día más concurrido es el martes.
+It's very clear that the activity decreases on weekends to less than half of usual and the busiest day is Tuesday.
 
 ```{r message=FALSE, warning=FALSE, paged.print=FALSE}
 gender <- ggplot(new_historicos_ecobici, aes(genero_usuario, fill = genero_usuario)) +
   geom_bar() +
-  scale_x_discrete(drop = FALSE)+
-  ggtitle("Cantidad de usuarios por genero en los registros")
+  scale_x_discrete(drop = FALSE) +
+  ggtitle("Number of users by gender in the registers") +
+  labs(x = "User genre", y = "Number of users")
 ggplotly(gender)
 ```
 
-Es notable la diferencia entre la cantidad de hombres que utilizan este servicio contra el genero femenino.
+**The difference between the number of men who use this service against the female gender is remarkable.**
 
-##Búsqueda de Publicaciones por hashtag #ecobici en Twitter
+## Search for posts by hashtag #ecobici on Twitter
 
-Búsqueda de twits relacionados con ecobici
 ```{r, message=FALSE, warning=FALSE}
-# creamos una llave en https://dev.twitter.com/apps
+# Before searching, an API Key must be created https://dev.twitter.com/apps
 consumer_key = "ZLzGFM9OTAR7qajKGxOIaTclA";
 consumer_secret = "JHdpn58t2poNdAH5xAdaKk7T3XfQmDiL7WHtylkAaRb4kxLJgz";
 
-# usamos auth básico
+# Basic Auth configuration
 secret <- jsonlite::base64_enc(paste(consumer_key, consumer_secret, sep = ":"))
 req <- httr::POST("https://api.twitter.com/oauth2/token",
   httr::add_headers(
@@ -672,11 +735,11 @@ req <- httr::POST("https://api.twitter.com/oauth2/token",
   body = "grant_type=client_credentials"
 );
 
-# extraemos el token de acceso
+# Extraction of access token
 httr::stop_for_status(req, "authenticate with twitter")
 token <- paste("Bearer", httr::content(req)$access_token)
 
-# llamada al API
+# Call to the API
 url <- "https://api.twitter.com/1.1/search/tweets.json?q=ecobici&result_type=mixed"
 req <- httr::GET(url, httr::add_headers(Authorization = token))
 json <- httr::content(req, as = "text")

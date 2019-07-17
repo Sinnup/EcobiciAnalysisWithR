@@ -1,7 +1,10 @@
-# Analisis de Datos de Ecobici con R
+# Analysis of Ecobici Data with R.
 
-Agregar en el mismo nivel una directorio llamado "Data" y dentro de éste agregar los archivos de excel descargados de los hisctóricos abiertos de Ecobici: https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data.
+Add at the same level a directory called "data" and within it add the excel files downloaded from the open historical data of Ecobici: https://www.ecobici.cdmx.gob.mx/es/informacion-del-servicio/open-data.
 
-Descarga los archivos excel desde el mes de enero hasta julio.
+Download the excel files from January to July.
 
-Encuentre la presentación en un documento HTML en el siguiente enlace: https://ecobici-data-analysis-with-r.firebaseapp.com/
+Find the presentation in an HTML document at the following link: https://ecobici-data-analysis-with-r.firebaseapp.com/
+
+### Where does html file go?
+It goes in "public" directory.

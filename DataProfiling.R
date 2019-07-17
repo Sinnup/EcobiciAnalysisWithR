@@ -1,4 +1,4 @@
-# función para obtener la moda, si la variable es numérica redondeamos a dos dígitos
+# This function provides the moden of a column, if the data is numerical, then it's rounded to 2 decimals.
 my_mode <- function(x){
   if (class(x) %in% c("character", "factor")) {
     table(x) %>%
@@ -12,20 +12,20 @@ my_mode <- function(x){
   }
 }
 
-# función para hacer profiling del set de datos por columna, dependiendo de si son categóricas o numéricas
+#This function makes data profiling of a data set per column, depending on wheter they're numerical or categorical data.
 profiling <- function(frame, type = "other"){
-  # cardinalidad
+  # Cardinality
   uniques <- data.frame(uniques = sapply(frame, function(x) unique(x) %>% length()))
   
-  # buscamos valores NA
+  # Search for NA values
   nan <- data.frame(nan = sapply(frame, function(x) sum(is.na(x))))
   
   if (type == "categorical"){
     
-    # obtenemos la moda
+    # Get the mode
     mode <- data.frame(mode = sapply(frame, function(x) my_mode(x)))
     profiling_df <- cbind(uniques, nan, mode)
-    profiling_df #Recordar que, al ser esta la última instrucción, se devuelve este por lo que se comporta como return
+    profiling_df
   }
   else {
     profiling_df <- cbind(uniques, nan)

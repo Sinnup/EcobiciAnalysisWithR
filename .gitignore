@@ -1,2 +1,6 @@
 data/
 .DS_STORE
+.Rproj.user
+credentials.txt
+.firebase
+.Rproj
