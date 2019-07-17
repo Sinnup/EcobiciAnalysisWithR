@@ -722,8 +722,8 @@ ggplotly(gender)
 
 ```{r, message=FALSE, warning=FALSE}
 # Before searching, an API Key must be created https://dev.twitter.com/apps
-consumer_key = "ZLzGFM9OTAR7qajKGxOIaTclA";
-consumer_secret = "JHdpn58t2poNdAH5xAdaKk7T3XfQmDiL7WHtylkAaRb4kxLJgz";
+consumer_key = "${your_consumer_key}";
+consumer_secret = "${your_consumer_secret}";
 
 # Basic Auth configuration
 secret <- jsonlite::base64_enc(paste(consumer_key, consumer_secret, sep = ":"))
