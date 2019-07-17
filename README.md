@@ -7,4 +7,4 @@ Descarga los archivos excel desde el mes de enero hasta julio.
 Encuentre la presentación en un documento HTML en el siguiente enlace: https://ecobici-data-analysis-with-r.firebaseapp.com/.
 
 #### **Note**
-**Please refere to the branch `feature/english` for english translation**
+**Please refer to the branch `feature/english` for english translation**
